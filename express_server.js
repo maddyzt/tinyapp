@@ -19,7 +19,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-// defines ther oute to match the post request from the new url form
+// defines the route to match the post request from the new url form
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
