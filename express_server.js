@@ -8,27 +8,36 @@ app.use(bodyParser.urlencoded({extended: true}));
 // set view engine to ejs
 app.set("view engine", "ejs");
 
+// defines a function that generates a random 6 character string
+function generateRandomString() {
+  let i = Math.random().toString(36).slice(2, 8);
+  return i;
+}
+
 // define urlDatabase object
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
-// renders the urls_new views page
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-});
-
-// defines the route to match the post request from the new url form
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
-});
-
 // gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+// defines the route to match the post request from the new url form
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`);
+  // console.log(req.body);  // Log the POST request body to the console
+  // res.send("Ok"); 
+});
+
+// renders the urls_new views page
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
 // gets the variables from the parameter to display in the urls_show page
@@ -47,8 +56,4 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// defines a function that generates a random 6 character string
-function generateRandomString() {
-  let i = Math.random().toString(36).slice(2, 8);
-  console.log(i);
-}
+
