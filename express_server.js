@@ -1,37 +1,54 @@
+// using express, bodyParser
 const express = require("express");
 const app = express();
 const PORT = 8080 // default port 8080
+const bodyParser = require("body-parser");
 
+app.use(bodyParser.urlencoded({extended: true}));
+// set view engine to ejs
 app.set("view engine", "ejs");
 
+// define urlDatabase object
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+// renders the urls_new views page
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
+// defines ther oute to match the post request from the new url form
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
+// gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// gets the variables from the parameter to display in the urls_show page
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
+// returns the urlDatabase object in JSON when user goest to /urls.json 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// server is listening
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+// defines a function that generates a random 6 character string
+function generateRandomString() {
+  let i = Math.random().toString(36).slice(2, 8);
+  console.log(i);
+}
