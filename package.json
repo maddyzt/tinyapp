@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/maddyzt/tinyapp/issues"
   },
-  "homepage": "https://github.com/maddyzt/tinyapp#readme"
+  "homepage": "https://github.com/maddyzt/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
 }
