@@ -5,6 +5,7 @@ const PORT = 8080 // default port 8080
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true}))
 // set view engine to ejs
 app.set("view engine", "ejs");
 
@@ -62,9 +63,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect(`/urls/`);
 });
 
-// defines the post route to edit a URL from the urls_show page
-app.post("/urls/:id/", (req, res) => {
-  res.redirect(`/urls/${req.params.id}`);
+// defines the post route to edit a URL from the urls_show page (on submit)
+app.post("/urls/:shortURL", (req, res) => {
+  urlDatabase[req.params.shortURL] = req.body.updatedURL;
+  res.redirect(`/urls`);
 });
 
 // server is listening

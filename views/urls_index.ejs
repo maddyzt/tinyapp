@@ -12,7 +12,6 @@
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
       <h3>My URLs</h3>
-      <h5><a href="href='#'">Shorten a new URL</a></h5>
       <table class="table">
         <thead>
           <tr>
@@ -28,9 +27,7 @@
               <td><%= url %></td>
               <td><%= urls[url] %></td>
               <td>
-              <form method="POST" action="/urls/<%= url %>">
-                <button type ="submit" class="btn-outline-info">Edit</button>
-              </form>
+              <a class="btn-outline-info" href="/urls/<%= url %>">Edit</a>
                 </td>
               <td>
               <form method="POST" action="/urls/<%= url %>/delete">
