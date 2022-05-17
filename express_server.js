@@ -26,7 +26,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-// defines the route to match the post request from the new url form
+// defines the post route when submitting a brand new url
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
@@ -60,6 +60,11 @@ app.get("/urls.json", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect(`/urls/`);
+});
+
+// defines the post route to edit a URL from the urls_show page
+app.post("/urls/:id/", (req, res) => {
+  res.redirect(`/urls/${req.params.id}`);
 });
 
 // server is listening
