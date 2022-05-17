@@ -11,13 +11,20 @@
       </div>
     </div>
 
+    <% if (username){ %>
+
+      <p style="margin: 1em">Logged in as: <%= username %></p>
+      <form class="form-inline" method="POST" action="/logout">
+        <button type ="submit" class="btn-outline-default" style="margin-left: 1em">Logout</button>
+      </form>
+
+    <% } else {%>
+
     <form class="form-inline" method="POST" action="/login">
       <input class="form-control mx-auto" type="text" name="username" placeholder="Username" style="width: 200px; margin: 1em">
       <button type ="submit" class="btn-outline-default" style="margin-left: 1em">Login</button>
     </form>
 
-    <% if (username){ %>
-      <p style="margin: 1em"><%= username %></p>
     <% } %>
   </nav>
 </header>

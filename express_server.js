@@ -87,6 +87,12 @@ app.post("/login", (req, res) => {
   res.redirect('/urls');
 })
 
+// defines the post route to logout from the nav bar
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+})
+
 // server is listening
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
