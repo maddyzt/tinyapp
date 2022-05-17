@@ -3,7 +3,10 @@ const express = require("express");
 const app = express();
 const PORT = 8080 // default port 8080
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const req = require("express/lib/request");
 
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.urlencoded({ extended: true}))
 // set view engine to ejs
@@ -21,9 +24,15 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+
+// defines username object
+// const templateVars = {
+//   username: req.cookies["username"]
+// };
+
 // gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
 
@@ -38,17 +47,19 @@ app.post("/urls", (req, res) => {
 
 // renders the urls_new views page
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { username: req.cookies["username"] }
+  res.render("urls_new", templateVars);
 });
 
 // gets the variables from the parameter to display in the urls_show page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 
 // redirects to long url
 app.get("/u/:shortURL", (req, res) => {
+  const templateVars = { username: req.cookies["username"]};
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
@@ -69,6 +80,12 @@ app.post("/urls/:shortURL", (req, res) => {
   urlDatabase[req.params.shortURL] = req.body.updatedURL;
   res.redirect(`/urls`);
 });
+
+// defines the post route to login from the nav bar
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
+})
 
 // server is listening
 app.listen(PORT, () => {
