@@ -56,6 +56,12 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// defines the post route to remove a URL from the database
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect(`/urls/`);
+});
+
 // server is listening
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
