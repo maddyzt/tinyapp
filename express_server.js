@@ -49,6 +49,25 @@ emailExists = (email) => {
   return false;
 };
 
+// define a function that checks if password matches
+passwordMatches = (email, password) => {
+  for (let user in users) {
+    if (users[user].email === email && users[user].password === password) {
+        return true;
+      }
+    }
+  return false;
+}
+
+// define a function to get ID from email
+returnID = (email) => {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user].id;
+    };
+  };
+};
+
 // gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
@@ -100,10 +119,10 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls`);
 });
 
-// defines the post route to login from the nav bar
-app.post("/login", (req, res) => {
-  res.redirect('/urls');
-})
+// // defines the post route to login from the nav bar
+// app.post("/login", (req, res) => {
+//   res.redirect('/urls');
+// })
 
 // defines the post route to logout from the nav bar
 app.post("/logout", (req, res) => {
@@ -149,7 +168,17 @@ app.get("/login", (req, res) => {
 });
 
 // defines post route for login page
-
+app.post("/login", (req, res) => {
+  let userID = returnID(req.body.email);
+  if (!emailExists(req.body.email)) {
+    res.send("email not found", 403);
+  } else if (!passwordMatches(req.body.email, req.body.password)) {
+    res.send("incorrect password", 403);
+  } else if (passwordMatches(req.body.email, req.body.password)) {
+    res.cookie('user_id', userID);
+    res.redirect('/urls');
+  }
+});
 
 // server is listening
 app.listen(PORT, () => {
