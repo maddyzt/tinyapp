@@ -12,6 +12,9 @@ app.use(express.urlencoded({ extended: true}))
 // set view engine to ejs
 app.set("view engine", "ejs");
 
+// define a variable to check if logged in
+let loggedIn = false;
+
 // defines a function that generates a random 6 character string
 generateRandomString = () => {
   let i = Math.random().toString(36).slice(2, 8);
@@ -76,17 +79,24 @@ app.get("/urls", (req, res) => {
 
 // defines the post route when submitting a brand new url
 app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
+  if (loggedIn) {
+    const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
-  // console.log(req.body);  // Log the POST request body to the console
-  // res.send("Ok"); 
+  } else {
+    res.send('invalid request', 400);
+  }
 });
 
 // renders the urls_new views page
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.cookies.user_id] }
-  res.render("urls_new", templateVars);
+  // check if user is logged in
+  if (loggedIn) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login")
+  }
 });
 
 // gets the variables from the parameter to display in the urls_show page
@@ -119,14 +129,10 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls`);
 });
 
-// // defines the post route to login from the nav bar
-// app.post("/login", (req, res) => {
-//   res.redirect('/urls');
-// })
-
 // defines the post route to logout from the nav bar
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
+  loggedIn = false;
   res.redirect('/urls');
 })
 
@@ -157,6 +163,7 @@ app.post("/register", (req, res) => {
 
   console.log(users);
   res.cookie('user_id', users[userID].id);
+  loggedIn = true;
   res.redirect('/urls');
 };
 });
@@ -176,6 +183,7 @@ app.post("/login", (req, res) => {
     res.send("incorrect password", 403);
   } else if (passwordMatches(req.body.email, req.body.password)) {
     res.cookie('user_id', userID);
+    loggedIn = true;
     res.redirect('/urls');
   }
 });
