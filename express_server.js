@@ -23,10 +23,15 @@ generateRandomString = () => {
 
 // define urlDatabase object
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "user2RandomID"
+  }
 };
-
 
 // define users object to store user information
 const users = {
@@ -81,7 +86,10 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   if (loggedIn) {
     const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID: req.cookies.user_id
+    };
   res.redirect(`/urls/${shortURL}`);
   } else {
     res.send('invalid request', 400);
@@ -101,14 +109,14 @@ app.get("/urls/new", (req, res) => {
 
 // gets the variables from the parameter to display in the urls_show page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { user: users[req.cookies.user_id], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = { user: users[req.cookies.user_id], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
   res.render("urls_show", templateVars);
 });
 
 // redirects to long url
 app.get("/u/:shortURL", (req, res) => {
   const templateVars = { user: users[req.cookies.user_id]};
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -125,7 +133,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 // defines the post route to edit a URL from the urls_show page (on submit)
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.updatedURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.updatedURL;
   res.redirect(`/urls`);
 });
 
