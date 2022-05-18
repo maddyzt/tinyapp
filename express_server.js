@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true}))
 app.set("view engine", "ejs");
 
 // defines a function that generates a random 6 character string
-function generateRandomString() {
+generateRandomString = () => {
   let i = Math.random().toString(36).slice(2, 8);
   return i;
 }
@@ -39,6 +39,15 @@ const users = {
   }
 };
  
+// defines a function that checks if an email already exists
+emailExists = (email) => {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return true;
+    };
+  };
+  return false;
+};
 
 // gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
@@ -110,15 +119,28 @@ app.get("/register", (req, res) => {
 
 // defines route to post user info from registration page to user object
 app.post("/register", (req, res) => {
+  // check if email or password is empty
+  if (req.body.email === "" || req.body.password === "") {
+    res.send("Please make sure all fields are completed", 400);
+  } 
+  // check if email already exists
+  else if (emailExists(req.body.email)) {
+    res.send("Email already exists", 400);
+  } 
+  
+  else {
   let userID = generateRandomString();
   users[userID] = {
     id: userID,
     email: req.body.email,
     password: req.body.password
   };
+
+  console.log(users);
   res.cookie('user_id', users[userID].id);
   res.redirect('/urls');
-})
+};
+});
 
 // server is listening
 app.listen(PORT, () => {
