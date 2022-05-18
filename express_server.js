@@ -5,6 +5,7 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const req = require("express/lib/request");
+const bcrypt = require("bcryptjs/dist/bcrypt");
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -20,28 +21,28 @@ generateRandomString = () => {
 
 // define urlDatabase object
 const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "userRandomID"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "user2RandomID"
-  }
+  // "b2xVn2": {
+  //   longURL: "http://www.lighthouselabs.ca",
+  //   userID: "userRandomID"
+  // },
+  // "9sm5xK": {
+  //   longURL: "http://www.google.com",
+  //   userID: "user2RandomID"
+  // }
 };
 
 // define users object to store user information
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@email.com",
-    password: "purple-monkey-dinosaur",
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@email.com",
-    password: "dishwasher-funk",
-  }
+  // "userRandomID": {
+  //   id: "userRandomID",
+  //   email: "user@email.com",
+  //   password: "purple-monkey-dinosaur",
+  // },
+  // "user2RandomID": {
+  //   id: "user2RandomID",
+  //   email: "user2@email.com",
+  //   password: "dishwasher-funk",
+  // }
 };
  
 // defines a function that checks if an email already exists
@@ -57,7 +58,8 @@ emailExists = (email) => {
 // define a function that checks if password matches
 passwordMatches = (email, password) => {
   for (let user in users) {
-    if (users[user].email === email && users[user].password === password) {
+    // if (users[user].email === email && users[user].password === password) {
+    if (users[user].email === email && bcrypt.compareSync(password, users[user].password)) {
       return true;
     }
   }
@@ -204,10 +206,11 @@ app.post("/register", (req, res) => {
     res.send("Email already exists", 400);
   } else {
     let userID = generateRandomString();
+    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
     users[userID] = {
       id: userID,
       email: req.body.email,
-      password: req.body.password
+      password: hashedPassword
     };
 
     console.log(users);
