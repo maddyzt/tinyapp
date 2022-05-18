@@ -25,14 +25,24 @@ const urlDatabase = {
 };
 
 
-// defines username object
-// const templateVars = {
-//   username: req.cookies["username"]
-// };
+// define users object to store user information
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@email.com",
+    password: "purple-monkey-dinosaur",
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@email.com",
+    password: "dishwasher-funk",
+  }
+};
+ 
 
 // gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   res.render("urls_index", templateVars);
 });
 
@@ -47,19 +57,19 @@ app.post("/urls", (req, res) => {
 
 // renders the urls_new views page
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] }
+  const templateVars = { user: users[req.cookies.user_id] }
   res.render("urls_new", templateVars);
 });
 
 // gets the variables from the parameter to display in the urls_show page
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  const templateVars = { user: users[req.cookies.user_id], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 
 // redirects to long url
 app.get("/u/:shortURL", (req, res) => {
-  const templateVars = { username: req.cookies["username"]};
+  const templateVars = { user: users[req.cookies.user_id]};
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
@@ -83,20 +93,31 @@ app.post("/urls/:shortURL", (req, res) => {
 
 // defines the post route to login from the nav bar
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
   res.redirect('/urls');
 })
 
 // defines the post route to logout from the nav bar
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 })
 
 // defines get route for registration page
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"]};
+  const templateVars = { user: users[req.cookies.user_id] };
   res.render("registration_page", templateVars);
+})
+
+// defines route to post user info from registration page to user object
+app.post("/register", (req, res) => {
+  let userID = generateRandomString();
+  users[userID] = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('user_id', users[userID].id);
+  res.redirect('/urls');
 })
 
 // server is listening
