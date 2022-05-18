@@ -142,6 +142,12 @@ app.post("/register", (req, res) => {
 };
 });
 
+// defines get route for login page
+app.get("/login", (req, res) => {
+  const templateVars = { user: users[req.cookies.user_id] };
+  res.render("login_page", templateVars);
+});
+
 // server is listening
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
