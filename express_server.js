@@ -12,9 +12,6 @@ app.use(express.urlencoded({ extended: true}))
 // set view engine to ejs
 app.set("view engine", "ejs");
 
-// define a variable to check if logged in
-let loggedIn = false;
-
 // defines a function that generates a random 6 character string
 generateRandomString = () => {
   let i = Math.random().toString(36).slice(2, 8);
@@ -76,15 +73,29 @@ returnID = (email) => {
   };
 };
 
+// define a function to see if shortURL exists in database
+validShortURL = (urlToCheck) => {
+  for (let url in urlDatabase) {
+    if (urlToCheck === url) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // gets the variables from the urlDatabase object to display in the urls_index page
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
-  res.render("urls_index", templateVars);
+  if (req.cookies.user_id) {
+    const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+    res.render("urls_index", templateVars);
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // defines the post route when submitting a brand new url
 app.post("/urls", (req, res) => {
-  if (loggedIn) {
+  if (req.cookies.user_id) {
     const shortURL = generateRandomString();
     urlDatabase[shortURL] = {
       longURL: req.body.longURL,
@@ -100,7 +111,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const templateVars = { user: users[req.cookies.user_id] }
   // check if user is logged in
-  if (loggedIn) {
+  if (req.cookies.user_id) {
     res.render("urls_new", templateVars);
   } else {
     res.redirect("/login")
@@ -115,9 +126,14 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // redirects to long url
 app.get("/u/:shortURL", (req, res) => {
-  const templateVars = { user: users[req.cookies.user_id]};
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  if (validShortURL(req.params.shortURL)) {
+    const templateVars = { user: users[req.cookies.user_id]};
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(longURL);
+  } else {
+    res.send("invalid URL", 404);
+  }
+
 });
 
 // returns the urlDatabase object in JSON when user goest to /urls.json 
@@ -140,7 +156,6 @@ app.post("/urls/:shortURL", (req, res) => {
 // defines the post route to logout from the nav bar
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
-  loggedIn = false;
   res.redirect('/urls');
 })
 
@@ -171,7 +186,6 @@ app.post("/register", (req, res) => {
 
   console.log(users);
   res.cookie('user_id', users[userID].id);
-  loggedIn = true;
   res.redirect('/urls');
 };
 });
@@ -191,7 +205,6 @@ app.post("/login", (req, res) => {
     res.send("incorrect password", 403);
   } else if (passwordMatches(req.body.email, req.body.password)) {
     res.cookie('user_id', userID);
-    loggedIn = true;
     res.redirect('/urls');
   }
 });
