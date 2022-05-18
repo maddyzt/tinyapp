@@ -148,6 +148,9 @@ app.get("/login", (req, res) => {
   res.render("login_page", templateVars);
 });
 
+// defines post route for login page
+
+
 // server is listening
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
