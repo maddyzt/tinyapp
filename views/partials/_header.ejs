@@ -8,13 +8,16 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-aitem nav-link" href="/urls/new">Create New URL</a>
-    <% if (!user){ %>    
-        <a class="nav-aitem nav-link" href="/register">Register</a>
-        <a class="nav-aitem nav-link" href="/login">Login</a>
-    <% }  else {%> 
       </div>
     </div>
-
+<div class="float-right" id="rightnavbarNavAltMarkup">
+  <div class="navbar-nav">
+  <% if (!user){ %>    
+    <a class="nav-aitem nav-link" href="/register">Register</a>
+    <a class="nav-aitem nav-link" href="/login">Login</a>
+<% }  else {%> 
+</div>
+</div>
     <p style="margin: 1em">Logged in as: <%= user.email %></p>
     <form class="form-inline" method="POST" action="/logout">
       <button type ="submit" class="btn-outline-default" style="margin-left: 1em">Logout</button>
