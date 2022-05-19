@@ -7,6 +7,9 @@ const cookieSession = require("cookie-session");
 const req = require("express/lib/request");
 const bcrypt = require("bcryptjs/dist/bcrypt");
 
+// require helper functions
+const { getUserByEmail } = require("./helpers");
+
 app.use(cookieSession({
   name: 'session',
   keys: ['super-secret-keys-9-a-4-g-x-9', 'super-secret-keys-3-g-4-l-p-2'],
@@ -49,25 +52,6 @@ const users = {
   // }
 };
  
-// define a function to return user from email
-getUserByEmail = (email, database) => {
-  for (let user in database) {
-    if(database[user].email === email) {
-      return user;
-    };
-  };
-};
-
-// defines a function that checks if an email already exists
-emailExists = (email) => {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return true;
-    }
-  }
-  return false;
-};
-
 // define a function that checks if password matches
 passwordMatches = (email, password) => {
   for (let user in users) {
