@@ -79,6 +79,11 @@ returnURLs =  (userID) => {
   return urlObject;
 };
 
+// GET request to redirect root path to /urls
+app.get('/', (req, res) => {
+  res.redirect('/urls');
+});
+
 // GET request for the /urls path (index page)
 app.get("/urls", (req, res) => {
   if (req.session.user_id) {
@@ -117,9 +122,11 @@ app.get("/urls/new", (req, res) => {
 
 // GET request for /urls/:shortURL to display the urls_show page
 app.get("/urls/:shortURL", (req, res) => {
-  if (req.session.user_id) {
+  if (req.session.user_id && req.session.user_id === urlDatabase[req.params.shortURL].userID) {
     const templateVars = { user: users[req.session.user_id], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL};
     res.render("urls_show", templateVars);
+  } else if (req.session.user_id !== urlDatabase[req.params.shortURL].userID) {
+    res.status(403).send("permission denied");
   } else {
     res.redirect("/login");
   }
