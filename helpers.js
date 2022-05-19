@@ -7,4 +7,5 @@ getUserByEmail = (email, database) => {
   };
 };
 
+// export function for use in server file
 module.exports = { getUserByEmail };

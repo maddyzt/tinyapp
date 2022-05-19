@@ -1,6 +1,8 @@
+// require chai and helper function
 const { assert } = require('chai');
 const { getUserByEmail } = require('../helpers.js');
 
+// declare test object
 const testUsers = {
   "userRandomID": {
     id: "userRandomID", 
@@ -14,6 +16,7 @@ const testUsers = {
   }
 };
 
+// test cases for getUserByEmail function
 describe('getUserByEmail', function() {
   it('should return a user with valid email', function() {
     const user = getUserByEmail("user@example.com", testUsers);
