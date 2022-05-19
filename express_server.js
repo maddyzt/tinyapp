@@ -126,7 +126,7 @@ app.post("/urls", (req, res) => {
     };
     res.redirect(`/urls/${shortURL}`);
   } else {
-    res.send('invalid request', 400);
+    res.status(400).send("invalid request");
   }
 });
 
@@ -158,9 +158,8 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
   } else {
-    res.send("invalid URL", 404);
+    res.status(404).send("invalid URL");
   }
-
 });
 
 // returns the urlDatabase object in JSON when user goest to /urls.json
@@ -174,7 +173,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
     delete urlDatabase[req.params.shortURL];
     res.redirect(`/urls/`);
   } else {
-    res.send("permission denied", 403);
+    res.status(403).send("permission denied");
   }
 });
 
@@ -184,7 +183,7 @@ app.post("/urls/:shortURL", (req, res) => {
     urlDatabase[req.params.shortURL].longURL = req.body.updatedURL;
     res.redirect(`/urls`);
   } else {
-    res.send("permission denied", 403);
+    res.status(403).send("permission denied");
   }
 });
 
@@ -206,10 +205,10 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   // check if email or password is empty
   if (req.body.email === "" || req.body.password === "") {
-    res.send("Please make sure all fields are completed", 400);
+    res.status(400).send("please make sure all fields are completed");
   // check if email already exists
   } else if (emailExists(req.body.email)) {
-    res.send("Email already exists", 400);
+    res.status(400).send("email already exists");
   } else {
     const userID = generateRandomString();
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
@@ -233,9 +232,9 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   let userID = returnID(req.body.email);
   if (!emailExists(req.body.email)) {
-    res.send("email not found", 403);
+    res.status(403).send("email not found");
   } else if (!passwordMatches(req.body.email, req.body.password)) {
-    res.send("incorrect password", 403);
+    res.status(403).send("incorrect password");
   } else if (passwordMatches(req.body.email, req.body.password)) {
     req.session.user_id = userID;
     res.redirect('/urls');
