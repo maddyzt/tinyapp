@@ -190,6 +190,10 @@ app.post("/logout", (req, res) => {
 
 // defines get route for registration page
 app.get("/register", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  }
+
   const templateVars = { user: users[req.session.user_id] };
   res.render("registration_page", templateVars);
 });
@@ -217,6 +221,10 @@ app.post("/register", (req, res) => {
 
 // defines get route for login page
 app.get("/login", (req, res) => {
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  }
+  
   const templateVars = { user: users[req.session.user_id] };
   res.render("login_page", templateVars);
 });
