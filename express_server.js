@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs/dist/bcrypt");
 
 app.use(cookieSession({
   name: 'session',
-  keys: ['super-secret-keys'],
+  keys: ['super-secret-keys-9-a-4-g-x-9', 'super-secret-keys-3-g-4-l-p-2'],
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -49,6 +49,15 @@ const users = {
   // }
 };
  
+// define a function to return user from email
+getUserByEmail = (email, database) => {
+  for (let user in database) {
+    if(database[user].email === email) {
+      return user;
+    };
+  };
+};
+
 // defines a function that checks if an email already exists
 emailExists = (email) => {
   for (let user in users) {
@@ -207,7 +216,7 @@ app.post("/register", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
     res.status(400).send("please make sure all fields are completed");
   // check if email already exists
-  } else if (emailExists(req.body.email)) {
+  } else if (getUserByEmail(req.body.email, users)) {
     res.status(400).send("email already exists");
   } else {
     const userID = generateRandomString();
@@ -231,7 +240,7 @@ app.get("/login", (req, res) => {
 // defines post route for login page
 app.post("/login", (req, res) => {
   let userID = returnID(req.body.email);
-  if (!emailExists(req.body.email)) {
+  if (!getUserByEmail(req.body.email, users)) {
     res.status(403).send("email not found");
   } else if (!passwordMatches(req.body.email, req.body.password)) {
     res.status(403).send("incorrect password");
