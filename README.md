@@ -6,6 +6,8 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 !["Screenshot of URLs home page"](https://github.com/maddyzt/tinyapp/blob/master/docs/ss1.png?raw=true)
 !["Screenshot of URL page"](https://github.com/maddyzt/tinyapp/blob/master/docs/ss2.png?raw=true)
+!["Screenshot of registration page](https://github.com/maddyzt/tinyapp/blob/master/docs/ss3.png?raw=true)
+
 
 ## Dependencies
 
